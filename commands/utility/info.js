@@ -33,7 +33,7 @@ module.exports = {
 						value: user.id,
 					},
 				];
-				interaction.channel.send({ embeds: [ infoEmbed ] });
+				await interaction.reply({ embeds: [ infoEmbed ] });
 			}
 			else {
 				infoEmbed.fields = [
@@ -46,7 +46,7 @@ module.exports = {
 						value: interaction.user.id,
 					},
 				];
-				interaction.channel.send({ embeds: [ infoEmbed ] });
+				await interaction.reply({ embeds: [ infoEmbed ] });
 			}
 		}
 		else if (interaction.options.getSubcommand() === 'server') {
@@ -61,7 +61,7 @@ module.exports = {
 					value: interaction.guild.memberCount,
 				},
 			];
-			interaction.channel.send({ embeds: [ infoEmbed ] });
+			await interaction.reply({ embeds: [ infoEmbed ] });
 		}
 	},
 };
