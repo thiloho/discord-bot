@@ -14,18 +14,54 @@ module.exports = {
 				.setName('server')
 				.setDescription('Info about the server')),
 	async execute(interaction) {
+		const infoEmbed = {
+			color: 0x0099ff,
+			title: 'User information',
+		};
+
 		if (interaction.options.getSubcommand() === 'user') {
 			const user = interaction.options.getUser('target');
 
 			if (user) {
-				await interaction.reply(`Username: ${user.username}\nID: ${user.id}`);
+				infoEmbed.fields = [
+					{
+						name: 'Username',
+						value: user.username,
+					},
+					{
+						name: 'ID',
+						value: user.id,
+					},
+				];
+				interaction.channel.send({ embeds: [ infoEmbed ] });
 			}
 			else {
-				await interaction.reply(`Your username: ${interaction.user.username}\nYour ID: ${interaction.user.id}`);
+				infoEmbed.fields = [
+					{
+						name: 'Your username',
+						value: interaction.user.username,
+					},
+					{
+						name: 'Your ID',
+						value: interaction.user.id,
+					},
+				];
+				interaction.channel.send({ embeds: [ infoEmbed ] });
 			}
 		}
 		else if (interaction.options.getSubcommand() === 'server') {
-			await interaction.reply(`Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`);
+			infoEmbed.title = 'Server information';
+			infoEmbed.fields = [
+				{
+					name: 'Server name',
+					value: interaction.guild.name,
+				},
+				{
+					name: 'Total members',
+					value: interaction.guild.memberCount,
+				},
+			];
+			interaction.channel.send({ embeds: [ infoEmbed ] });
 		}
 	},
 };
