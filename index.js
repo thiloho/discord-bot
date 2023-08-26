@@ -2,7 +2,6 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
-const { Users } = require('./dbObjects.js');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildMessages] });
 
@@ -41,27 +40,4 @@ for (const file of eventFiles) {
 
 client.cooldowns = new Collection();
 
-const currency = new Collection();
-
-async function addBalance(id, amount) {
-	const user = currency.get(id);
-
-	if (user) {
-		user.balance += Number(amount);
-		return user.save();
-	}
-
-	const newUser = await Users.create({ user_id: id, balance: amount });
-	currency.set(id, newUser);
-
-	return newUser;
-}
-
-function getBalance(id) {
-	const user = currency.get(id);
-	return user ? user.balance : 0;
-}
-
 client.login(token);
-
-module.exports = { currency, addBalance, getBalance };

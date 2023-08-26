@@ -1,12 +1,13 @@
 const { Events } = require('discord.js');
-const { Users, CurrencyShop } = require('../dbObjects.js');
+const { Users } = require('../dbObjects.js');
+const { currency } = require('../shared-currency-functions.js');
 
 module.exports = {
 	name: Events.ClientReady,
 	once: true,
 	async execute(client) {
 		const storedBalances = await Users.findAll();
-		storedBalances.forEach(b => CurrencyShop.set(b.user_id, b));
+		storedBalances.forEach(b => currency.set(b.user_id, b));
 
 		console.log(`Ready! Logged in as ${client.user.tag}`);
 	},

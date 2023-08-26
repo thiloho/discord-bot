@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, codeBlock } = require('discord.js');
-const { currency, getBalance, addBalance } = require('../../index.js');
+const { currency, getBalance, addBalance } = require('../../shared-currency-functions');
 const { Users, CurrencyShop } = require('../../dbObjects.js');
 const { Op } = require('sequelize');
 
@@ -21,8 +21,8 @@ module.exports = {
 			subcommand
 				.setName('transfer')
 				.setDescription('Transfer currency to another user')
-				.addUserOption(option => option.setName('target').setDescription('The user'))
-				.addIntegerOption(option => option.setName('amount').setDescription('Amount of money')))
+				.addIntegerOption(option => option.setName('amount').setDescription('Amount of money'))
+				.addUserOption(option => option.setName('target').setDescription('The user')))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('buy')
@@ -54,7 +54,7 @@ module.exports = {
 		else if (interaction.options.getSubcommand() === 'transfer') {
 			const currentAmount = getBalance(interaction.user.id);
 			const transferAmount = interaction.options.getInteger('amount');
-			const transferTarget = interaction.options.getUser('user');
+			const transferTarget = interaction.options.getUser('target');
 
 			if (transferAmount > currentAmount) return interaction.reply(`Sorry, ${interaction.user}, you have only ${currentAmount}`);
 			if (transferAmount <= 0) return interaction.reply(`Please enter an amount greater than zero, ${interaction.user}.`);
@@ -75,9 +75,9 @@ module.exports = {
 
 			const user = await Users.findOne({ where: { user_id: interaction.user.id } });
 			addBalance(interaction.user.id, -item.cost);
-			await user.additem(item);
+			await user.addItem(item);
 
-			return interaction.reply(`You have bought: ${item.name}.`);
+			return interaction.reply(`You've bought: ${item.name}.`);
 		}
 		else if (interaction.options.getSubcommand() === 'shop') {
 			const items = await CurrencyShop.findAll();
