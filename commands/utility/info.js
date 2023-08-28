@@ -45,6 +45,10 @@ module.exports = {
 						name: 'Your ID',
 						value: interaction.user.id,
 					},
+					{
+						name: 'Account created on',
+						value: interaction.user.createdAt,
+					},
 				];
 				await interaction.reply({ embeds: [ infoEmbed ] });
 			}

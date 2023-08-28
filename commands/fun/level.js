@@ -27,7 +27,7 @@ module.exports = {
 			}
 		}
 		else if (interaction.options.getSubcommand() === 'rewards') {
-			const rewards = 'Level 5: Reward 1\nLevel 10: Reward 2\nLevel 15: Reward 3';
+			const rewards = 'Level 3: Bronze\nLevel 10: Gold\nLevel 20: Platinum';
 			await interaction.reply(`Level rewards:\n${rewards}`);
 		}
 	},

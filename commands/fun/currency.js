@@ -21,13 +21,13 @@ module.exports = {
 			subcommand
 				.setName('transfer')
 				.setDescription('Transfer currency to another user')
-				.addIntegerOption(option => option.setName('amount').setDescription('Amount of money'))
-				.addUserOption(option => option.setName('target').setDescription('The user')))
+				.addIntegerOption(option => option.setName('amount').setDescription('Amount of money').setRequired(true))
+				.addUserOption(option => option.setName('target').setDescription('The user').setRequired(true)))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('buy')
 				.setDescription('Buy an item')
-				.addStringOption(option => option.setName('item').setDescription('Name of the item to buy')))
+				.addStringOption(option => option.setName('item').setDescription('Name of the item to buy').setRequired(true)))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('shop')

@@ -1,4 +1,4 @@
-const { Events } = require('discord.js');
+const { Events, roleMention } = require('discord.js');
 const { Users } = require('../dbObjects.js');
 
 module.exports = {
@@ -33,7 +33,23 @@ module.exports = {
 					const { member } = message;
 
 					member.roles.add(roleId);
-					message.reply('You were given the `Active` role because you reached level 3. Congratulations!');
+					message.reply(`You were given the ${roleMention(roleId)} role because you reached level ${user.level}. Congratulations!`);
+				}
+
+				if (user.level === 10) {
+					const roleId = '1145397596819554474';
+					const { member } = message;
+
+					member.roles.add(roleId);
+					message.reply(`You were given the ${roleMention(roleId)} role because you reached level ${user.level}. Congratulations!`);
+				}
+
+				if (user.level === 20) {
+					const roleId = '1145397674334507110';
+					const { member } = message;
+
+					member.roles.add(roleId);
+					message.reply(`You were given the ${roleMention(roleId)} role because you reached level ${user.level}. Congratulations!`);
 				}
 			}
 			await user.save();
