@@ -8,6 +8,12 @@ module.exports = {
 		.setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
 	async execute(interaction) {
 		const member = interaction.options.getMember('target');
+
+		if (!member) {
+			await interaction.reply('Error: User not found.');
+			return;
+		}
+
 		member.timeout(null);
 		await interaction.reply(`${member} was successfully unmuted.`);
 	},

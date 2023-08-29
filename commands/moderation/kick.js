@@ -10,7 +10,30 @@ module.exports = {
 	async execute(interaction) {
 		const member = interaction.options.getMember('target');
 		const kickReason = interaction.options.getString('reason');
+
+		if (!member) {
+			await interaction.reply('Error: User not found.');
+			return;
+		}
+
 		member.kick();
-		await interaction.reply(`${member} was kicked from the server for reason: ${kickReason ?? 'No reason specified'}.`);
+
+		const kickEmbed = {
+			color: 0x0099ff,
+			title: 'Server kick',
+			description: `The user ${member.user.tag} was successfully kicked from the server.`,
+			fields: [
+				{
+					name: 'Kicked by',
+					value: `${interaction.user.tag}`,
+				},
+				{
+					name: 'Reason',
+					value: `${kickReason ?? 'No reason specified'}`,
+				},
+			],
+		};
+
+		await interaction.reply({ embeds: [ kickEmbed ] });
 	},
 };

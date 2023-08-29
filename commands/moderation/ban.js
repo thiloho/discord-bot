@@ -10,7 +10,30 @@ module.exports = {
 	async execute(interaction) {
 		const user = interaction.options.getUser('target');
 		const banReason = interaction.options.getString('reason');
+
+		if (!user) {
+			await interaction.reply('Error: User not found.');
+			return;
+		}
+
 		interaction.guild.members.ban(user);
-		await interaction.reply(`${user} was banned from the server for reason ${banReason ?? 'No reason specified'}.`);
+
+		const banEmbed = {
+			color: 0x0099ff,
+			title: 'Server ban',
+			description: `The user ${user.tag} was successfully kicked from the server.`,
+			fields: [
+				{
+					name: 'Banned by',
+					value: `${interaction.user.tag}`,
+				},
+				{
+					name: 'Reason',
+					value: `${banReason ?? 'No reason specified'}`,
+				},
+			],
+		};
+
+		await interaction.reply({ embeds: [ banEmbed ] });
 	},
 };
