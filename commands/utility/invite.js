@@ -5,6 +5,6 @@ module.exports = {
 		.setName('invite')
 		.setDescription('Get the permanent invite link for the server.'),
 	async execute(interaction) {
-		await interaction.reply('Server invite link: https://discord.gg/v4FXP6v8Xg');
+		await interaction.reply('https://discord.gg/v4FXP6v8Xg');
 	},
 };

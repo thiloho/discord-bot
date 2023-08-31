@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, userMention } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -23,15 +23,15 @@ module.exports = {
 		const muteEmbed = {
 			color: 0x0099ff,
 			title: 'Server mute',
-			description: `The user ${member.user.tag} was successfully muted.`,
+			description: `The user ${userMention(member.user.id)} was successfully muted.`,
 			fields: [
 				{
 					name: 'Duration',
-					value: `${timeoutDuration}`,
+					value: `${timeoutDuration} minutes`,
 				},
 				{
 					name: 'Muted by',
-					value: `${interaction.user.tag}`,
+					value: `${userMention(interaction.user.id)}`,
 				},
 				{
 					name: 'Reason',

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, userMention } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -21,11 +21,11 @@ module.exports = {
 		const banEmbed = {
 			color: 0x0099ff,
 			title: 'Server ban',
-			description: `The user ${user.tag} was successfully kicked from the server.`,
+			description: `The user ${userMention(user.id)} was successfully kicked from the server.`,
 			fields: [
 				{
 					name: 'Banned by',
-					value: `${interaction.user.tag}`,
+					value: `${userMention(interaction.user.id)}`,
 				},
 				{
 					name: 'Reason',

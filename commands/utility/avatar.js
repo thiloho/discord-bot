@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, userMention } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -7,7 +7,23 @@ module.exports = {
 		.addUserOption(option => option.setName('target').setDescription('The user who you want an avatar preview of')),
 	async execute(interaction) {
 		const user = interaction.options.getUser('target');
-		if (user) return interaction.reply(`${user.username}'s avatar: ${user.displayAvatarURL({ dynamic: true })}`);
-		return interaction.reply(`Your avatar: ${interaction.user.displayAvatarURL()}`);
+
+		const avatarEmbed = {
+			color: 0x0099ff,
+			title: 'User avatar',
+			description: 'Your avatar:',
+			image: {
+				url: `${interaction.user.displayAvatarURL()}`,
+			},
+		};
+
+		if (user) {
+			avatarEmbed.description = `Avatar for ${userMention(user.id)}:`;
+			avatarEmbed.image.url = `${user.displayAvatarURL({ dynamic: true })}`;
+
+			return await interaction.reply({ embeds: [ avatarEmbed ] });
+		}
+
+		return await interaction.reply({ embeds: [ avatarEmbed ] });
 	},
 };
