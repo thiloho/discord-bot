@@ -19,6 +19,11 @@ module.exports = (sequelize, DataTypes) => {
 			defaultValue: 1,
 			allowNull: false,
 		},
+		last_claim: {
+			type: DataTypes.DATE,
+			defaultValue: new Date(),
+			allowNull: false,
+		},
 	}, {
 		timestamps: false,
 	});

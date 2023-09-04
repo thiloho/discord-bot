@@ -1,5 +1,6 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, roleMention } = require('discord.js');
 const { Users } = require('../../dbObjects.js');
+const rewards = require('../../level-rewards.json');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -27,8 +28,17 @@ module.exports = {
 			}
 		}
 		else if (interaction.options.getSubcommand() === 'rewards') {
-			const rewards = 'Level 3: Bronze\nLevel 10: Gold\nLevel 20: Platinum';
-			await interaction.reply(`Level rewards:\n${rewards}`);
+			const rewardsEmbed = {
+				color: 0x0099ff,
+				title: 'Level rewards',
+				fields: [],
+			};
+
+			for (const [level, roleId] of Object.entries(rewards)) {
+				rewardsEmbed.fields.push({ name: `Level ${level}`, value: `${roleMention(roleId)}` });
+			}
+
+			await interaction.reply({ embeds: [rewardsEmbed] });
 		}
 	},
 };

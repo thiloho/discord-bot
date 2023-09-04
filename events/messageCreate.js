@@ -1,5 +1,6 @@
 const { Events, roleMention } = require('discord.js');
 const { Users } = require('../dbObjects.js');
+const rewards = require('../level-rewards.json');
 
 module.exports = {
 	name: Events.MessageCreate,
@@ -27,27 +28,10 @@ module.exports = {
 				user.level += 1;
 				user.experience_points = 0;
 				message.reply(`Congratulations! You have leveled up to level ${user.level}!`);
-
-				if (user.level === 3) {
-					const roleId = '1145397499784335501';
+			}
+			for (const [level, roleId] of Object.entries(rewards)) {
+				if (user.level == level) {
 					const { member } = message;
-
-					member.roles.add(roleId);
-					message.reply(`You were given the ${roleMention(roleId)} role because you reached level ${user.level}. Congratulations!`);
-				}
-
-				if (user.level === 10) {
-					const roleId = '1145397596819554474';
-					const { member } = message;
-
-					member.roles.add(roleId);
-					message.reply(`You were given the ${roleMention(roleId)} role because you reached level ${user.level}. Congratulations!`);
-				}
-
-				if (user.level === 20) {
-					const roleId = '1145397674334507110';
-					const { member } = message;
-
 					member.roles.add(roleId);
 					message.reply(`You were given the ${roleMention(roleId)} role because you reached level ${user.level}. Congratulations!`);
 				}

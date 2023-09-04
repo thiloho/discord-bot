@@ -35,7 +35,11 @@ module.exports = {
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('leaderboard')
-				.setDescription('Display the leaderboard')),
+				.setDescription('Display the leaderboard'))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('claim')
+				.setDescription('Claim your daily money')),
 	async execute(interaction) {
 		if (interaction.options.getSubcommand() === 'balance') {
 			const target = interaction.options.getUser('target') ?? interaction.user;
@@ -93,6 +97,28 @@ module.exports = {
 						.join('\n'),
 				),
 			);
+		}
+		else if (interaction.options.getSubcommand() === 'claim') {
+			let user = await Users.findOne({ where: { user_id: interaction.user.id } });
+
+			if (!user) {
+				user = await Users.create({ user_id: interaction.user.id });
+			}
+
+			const lastClaim = user.last_claim;
+			const now = new Date();
+			const diffTime = Math.abs(now - lastClaim);
+			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+			if (diffDays < 1) {
+				return interaction.reply(`Sorry, ${interaction.user}, you have already claimed your daily money.`);
+			}
+
+			addBalance(interaction.user.id, 10);
+			user.last_claim = now;
+			await user.save();
+
+			return interaction.reply(`You successfully claimed daily money. Your current balance is ${getBalance(interaction.user.id)} money.`);
 		}
 	},
 };
