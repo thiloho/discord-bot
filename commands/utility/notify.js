@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('discord.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('notify')
-		.setDescription('Receive pings from announcements.'),
+		.setDescription('Receive or stop receiving pings from announcements.'),
 	async execute(interaction) {
 		const roleId = '1142228335682932846';
 		const member = interaction.member;

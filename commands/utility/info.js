@@ -3,24 +3,24 @@ const { SlashCommandBuilder } = require('discord.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('info')
-		.setDescription('Get info about a user or the server.')
+		.setDescription('Get information about a user or the server.')
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('user')
-				.setDescription('Info about a user')
-				.addUserOption(option => option.setName('target').setDescription('The user')))
+				.setDescription('Information about a user.')
+				.addUserOption(option => option.setName('user').setDescription('User')))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('server')
-				.setDescription('Info about the server')),
+				.setDescription('Information about the server.')),
 	async execute(interaction) {
 		const infoEmbed = {
 			color: 0x0099ff,
-			title: 'User information',
+			title: 'Info',
 		};
 
 		if (interaction.options.getSubcommand() === 'user') {
-			const user = interaction.options.getUser('target');
+			const user = interaction.options.getUser('user');
 
 			if (user) {
 				infoEmbed.fields = [
@@ -58,7 +58,6 @@ module.exports = {
 			}
 		}
 		else if (interaction.options.getSubcommand() === 'server') {
-			infoEmbed.title = 'Server information';
 			infoEmbed.fields = [
 				{
 					name: 'Server name',

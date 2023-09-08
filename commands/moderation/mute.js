@@ -3,20 +3,20 @@ const { SlashCommandBuilder, PermissionFlagsBits, userMention } = require('disco
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('mute')
-		.setDescription('Mute a user')
-		.addUserOption(option => option.setName('target').setDescription('User to mute').setRequired(true))
-		.addIntegerOption(option => option.setName('duration').setDescription('Time in minutes until the mute is over').setRequired(true))
-		.addStringOption(option => option.setName('reason').setDescription('Why the user was muted'))
+		.setDescription('Mute a user.')
+		.addUserOption(option => option.setName('user').setDescription('User to mute').setRequired(true))
+		.addIntegerOption(option => option.setName('duration').setDescription('Duration in minutes until the mute is over').setRequired(true))
+		.addStringOption(option => option.setName('reason').setDescription('Reason for the mute'))
 		.setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
 	async execute(interaction) {
-		const member = interaction.options.getMember('target');
+		const member = interaction.options.getMember('user');
 		const timeoutDuration = interaction.options.getInteger('duration');
 		const timeoutReason = interaction.options.getString('reason');
 
 		if (!member) {
 			const noUserFoundEmbed = {
 				color: 0x0099ff,
-				title: 'Not found',
+				title: 'Mute',
 				description: 'Error: User not found.',
 			};
 			return await interaction.reply({ embeds: [noUserFoundEmbed] });
@@ -26,8 +26,8 @@ module.exports = {
 
 		const muteEmbed = {
 			color: 0x0099ff,
-			title: 'Server mute',
-			description: `The user ${userMention(member.user.id)} was successfully muted.`,
+			title: 'Mute',
+			description: `The user ${userMention(member.user.id)} has been successfully muted.`,
 			fields: [
 				{
 					name: 'Duration',

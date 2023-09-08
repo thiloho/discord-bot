@@ -6,40 +6,40 @@ const { Op } = require('sequelize');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('currency')
-		.setDescription('Build your own wealth!')
+		.setDescription('Manage your virtual wealth.')
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('balance')
-				.setDescription('Amount of money you or a user has')
-				.addUserOption(option => option.setName('target').setDescription('The user')))
+				.setDescription('Check your account balance or that of another user.')
+				.addUserOption(option => option.setName('user').setDescription('User')))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('inventory')
-				.setDescription('Show the items you or a user have')
-				.addUserOption(option => option.setName('target').setDescription('The user')))
+				.setDescription('View your or another user\'s item inventory.')
+				.addUserOption(option => option.setName('user').setDescription('User')))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('transfer')
-				.setDescription('Transfer currency to another user')
-				.addIntegerOption(option => option.setName('amount').setDescription('Amount of money').setRequired(true))
-				.addUserOption(option => option.setName('target').setDescription('The user').setRequired(true)))
+				.setDescription('Transfer currency to another user."')
+				.addIntegerOption(option => option.setName('amount').setDescription('Amount of money').setMinValue(1).setRequired(true))
+				.addUserOption(option => option.setName('recipient').setDescription('User who receives the money').setRequired(true)))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('buy')
-				.setDescription('Buy an item')
-				.addStringOption(option => option.setName('item').setDescription('Name of the item to buy').setAutocomplete(true).setRequired(true)))
+				.setDescription('Purchase an item from the shop.')
+				.addStringOption(option => option.setName('item_name').setDescription('Name of the item to purchase').setAutocomplete(true).setRequired(true)))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('shop')
-				.setDescription('Display the shop'))
+				.setDescription('Browse items available in the shop.'))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('leaderboard')
-				.setDescription('Display the leaderboard'))
+				.setDescription('View a list of the richest people on the server.'))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('claim')
-				.setDescription('Claim your daily money')),
+				.setDescription('Claim your daily money.')),
 	async autocomplete(interaction) {
 		const focusedValue = interaction.options.getFocused();
 		const choices = await getAllItems();
@@ -51,16 +51,16 @@ module.exports = {
 	},
 	async execute(interaction) {
 		if (interaction.options.getSubcommand() === 'balance') {
-			const target = interaction.options.getUser('target') ?? interaction.user;
+			const target = interaction.options.getUser('user') ?? interaction.user;
 			const balanceEmbed = {
 				color: 0x0099ff,
 				title: 'Balance',
-				description: `${target.id === interaction.user.id ? 'You have' : `${userMention(target.id)} has`} ${getBalance(target.id)}$`,
+				description: `${target.id === interaction.user.id ? 'Your current account balance is' : `${userMention(target.id)}'s current account balance is`} $${getBalance(target.id)}.`,
 			};
 			return interaction.reply({ embeds: [balanceEmbed] });
 		}
 		else if (interaction.options.getSubcommand() === 'inventory') {
-			const target = interaction.options.getUser('target') ?? interaction.user;
+			const target = interaction.options.getUser('user') ?? interaction.user;
 			let user = await Users.findOne({ where: { user_id: target.id } });
 
 			if (!user) {
@@ -72,8 +72,8 @@ module.exports = {
 			if (!items.length) {
 				const inventoryEmptyEmbed = {
 					color: 0x0099ff,
-					title: 'No items',
-					description: `${target.id === interaction.user.id ? 'You have' : `${userMention(target.id)} has`} nothing!`,
+					title: 'Inventory',
+					description: `${target.id === interaction.user.id ? 'Your inventory' : `${userMention(target.id)}'s inventory`} is empty.`,
 				};
 
 				return interaction.reply({ embeds: [inventoryEmptyEmbed] });
@@ -87,7 +87,7 @@ module.exports = {
 			const inventoryEmbed = {
 				color: 0x0099ff,
 				title: 'Inventory',
-				description: `${target.id === interaction.user.id ? 'Your inventory' : `${userMention(target.id)}'s inventory`}`,
+				description: `${target.id === interaction.user.id ? 'Your inventory' : `${userMention(target.id)}'s inventory`} contains the following items:`,
 				fields: itemFields,
 			};
 
@@ -96,23 +96,15 @@ module.exports = {
 		else if (interaction.options.getSubcommand() === 'transfer') {
 			const currentAmount = getBalance(interaction.user.id);
 			const transferAmount = interaction.options.getInteger('amount');
-			const transferTarget = interaction.options.getUser('target');
+			const transferTarget = interaction.options.getUser('recipient');
 
 			if (transferAmount > currentAmount) {
 				const insufficientFundsEmbed = {
 					color: 0x0099ff,
-					title: 'Insufficient Funds',
-					description: `Sorry, ${interaction.user}, you have only ${currentAmount}$`,
+					title: 'Transfer',
+					description: `Sorry, you have only $${currentAmount}, and you tried to transfer $${transferAmount}.`,
 				};
 				return interaction.reply({ embeds: [insufficientFundsEmbed] });
-			}
-			if (transferAmount <= 0) {
-				const zeroAmountEmbed = {
-					color: 0x0099ff,
-					title: 'Invalid Amount',
-					description: `Please enter an amount greater than zero, ${interaction.user}.`,
-				};
-				return interaction.reply({ embeds: [zeroAmountEmbed] });
 			}
 
 			addBalance(interaction.user.id, -transferAmount);
@@ -120,21 +112,21 @@ module.exports = {
 
 			const transferSuccessEmbed = {
 				color: 0x0099ff,
-				title: 'Transfer Successful',
-				description: `Successfully transferred ${transferAmount}$ to ${transferTarget}. Your current balance is ${getBalance(interaction.user.id)}$.`,
+				title: 'Buy',
+				description: `You have successfully transferred $${transferAmount} to ${transferTarget}. Your current balance is $${getBalance(interaction.user.id)}.`,
 			};
 			return interaction.reply({ embeds: [transferSuccessEmbed] });
 		}
 		else if (interaction.options.getSubcommand() === 'buy') {
-			const itemName = interaction.options.getString('item');
+			const itemName = interaction.options.getString('item_name');
 			const item = await CurrencyShop.findOne({ where: { name: { [Op.like]: itemName } } });
 
-			if (!item) return interaction.reply('That item does not exist.');
+			if (!item) return interaction.reply('The requested item does not exist.');
 			if (item.cost > getBalance(interaction.user.id)) {
 				const purchaseInsufficientFundsEmbed = {
 					color: 0x0099ff,
-					title: 'Insufficient funds',
-					description: `You currently have ${getBalance(interaction.user.id)}$, but the ${item.name} costs ${item.cost}$`,
+					title: 'Buy',
+					description: `You currently have $${getBalance(interaction.user.id)}, but the ${item.name} costs $${item.cost}.`,
 				};
 
 				return interaction.reply({ embeds: [purchaseInsufficientFundsEmbed] });
@@ -147,8 +139,8 @@ module.exports = {
 
 			const purchaseEmbed = {
 				color: 0x0099ff,
-				title: 'Purchase',
-				description: `You have bought the following item: ${item.name}.`,
+				title: 'Buy',
+				description: `You have successfully purhcased the item: ${item.name}.`,
 			};
 
 			return interaction.reply({ embeds: [purchaseEmbed] });
@@ -158,12 +150,13 @@ module.exports = {
 
 			const itemFields = items.map(i => ({
 				name: i.name,
-				value: `Cost: ${i.cost}$`,
+				value: `Cost: $${i.cost}`,
 			}));
 
 			const shopEmbed = {
 				color: 0x0099ff,
 				title: 'Shop',
+				description: 'Here are the items available in the shop:',
 				fields: itemFields,
 			};
 
@@ -175,12 +168,13 @@ module.exports = {
 				.first(10)
 				.map((user, position) => ({
 					name: `(${position + 1}) ${interaction.client.users.cache.get(user.user_id).tag}`,
-					value: `Balance: ${user.balance}$`,
+					value: `Balance: $${user.balance}`,
 				}));
 
 			const leaderboardEmbed = {
 				color: 0x0099ff,
 				title: 'Leaderboard',
+				description: 'Here are the top 10 users on the currency leaderboard:',
 				fields: leaderboardFields,
 			};
 
@@ -201,8 +195,8 @@ module.exports = {
 			if (diffDays < 1) {
 				const claimedAlreadyEmbed = {
 					color: 0x0099ff,
-					title: 'Already claimed',
-					description: 'You have already claimed your money in the last 24 hours. Please come back later.',
+					title: 'Claim',
+					description: 'You have already claimed your daily money in the last 24 hours. Please come back later.',
 				};
 				return interaction.reply({ embeds: [claimedAlreadyEmbed] });
 			}
@@ -215,8 +209,8 @@ module.exports = {
 
 			const claimSuccessfulEmbed = {
 				color: 0x0099ff,
-				title: 'Claimed money',
-				description: `You have successfully claimed your ${dailyMoneyAmount}$ daily money!`,
+				title: 'Claim',
+				description: 'You have successfully claimed your daily money.',
 			};
 
 			return interaction.reply({ embeds: [claimSuccessfulEmbed] });

@@ -29,6 +29,7 @@ async function addBalance(id, amount) {
 
 function getBalance(id) {
 	const user = currency.get(id);
+
 	return user ? user.balance : 0;
 }
 

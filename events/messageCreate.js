@@ -31,7 +31,7 @@ module.exports = {
 				const levelUpEmbed = {
 					color: 0x0099ff,
 					title: 'Level up',
-					description: `Congratulations! You have leveled up to level ${user.level}!`,
+					description: `Congratulations! You have reached level ${user.level}!`,
 				};
 				message.reply({ embeds: [levelUpEmbed] });
 			}
@@ -43,7 +43,7 @@ module.exports = {
 					const levelRewardEmbed = {
 						color: 0x0099ff,
 						title: 'Level reward',
-						description: `You were given the ${roleMention(roleId)} role because you reached level ${user.level}. Congratulations!`,
+						description: `You were given the ${roleMention(roleId)} role for reaching level ${user.level}. Congratulations!`,
 					};
 					message.reply({ embeds: [levelRewardEmbed] });
 				}

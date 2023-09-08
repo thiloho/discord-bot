@@ -4,17 +4,17 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('ban')
 		.setDescription('Ban a user from the server.')
-		.addUserOption(option => option.setName('target').setDescription('User to ban').setRequired(true))
-		.addStringOption(option => option.setName('reason').setDescription('Why the user was banned'))
+		.addUserOption(option => option.setName('user').setDescription('User to ban').setRequired(true))
+		.addStringOption(option => option.setName('reason').setDescription('Reason for the ban'))
 		.setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
 	async execute(interaction) {
-		const user = interaction.options.getUser('target');
+		const user = interaction.options.getUser('user');
 		const banReason = interaction.options.getString('reason');
 
 		if (!user) {
 			const noUserFoundEmbed = {
 				color: 0x0099ff,
-				title: 'Not found',
+				title: 'Ban',
 				description: 'Error: User not found.',
 			};
 			return await interaction.reply({ embeds: [noUserFoundEmbed] });
@@ -22,8 +22,8 @@ module.exports = {
 
 		const banEmbed = {
 			color: 0x0099ff,
-			title: 'Server ban',
-			description: `The user ${userMention(user.id)} was successfully banned from the server.`,
+			title: 'Ban',
+			description: `The user ${userMention(user.id)} has been successfully banned from the server.`,
 			fields: [
 				{
 					name: 'Banned by',
