@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, inlineCode } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -9,13 +9,28 @@ module.exports = {
 	async execute(interaction) {
 		const amount = interaction.options.getInteger('amount');
 		if (amount < 1 || amount > 99) {
-			return interaction.reply({ content: 'You need to input a number between 1 and 99.', ephemeral: true });
+			const invalidNumberEmbed = {
+				color: 0x0099ff,
+				title: 'Invalid number',
+				description: 'You need to input a number between 1 and 99.',
+			};
+			return interaction.reply({ embeds: [invalidNumberEmbed], ephemeral: true });
 		}
 		await interaction.channel.bulkDelete(amount, true).catch(error => {
 			console.error(error);
-			interaction.reply({ content: 'There was an error trying to prune messages in this channel!', ephemeral: true });
+			const internalErrorEmbed = {
+				color: 0x0099ff,
+				title: 'Internal error',
+				description: 'There was an error trying to prune messages in this channel!',
+			};
+			interaction.reply({ embeds: [internalErrorEmbed], ephemeral: true });
 		});
 
-		return interaction.reply({ content: `Successfully pruned \`${amount}\` messages.`, ephemeral: true });
+		const pruneEmbed = {
+			color: 0x0099ff,
+			title: 'Prune',
+			description: `Successfully pruned ${inlineCode(amount)} message(s).`,
+		};
+		return interaction.reply({ embeds: [pruneEmbed], ephemeral: true });
 	},
 };

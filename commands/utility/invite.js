@@ -5,6 +5,16 @@ module.exports = {
 		.setName('invite')
 		.setDescription('Get the permanent invite link for the server.'),
 	async execute(interaction) {
-		await interaction.reply('https://discord.gg/v4FXP6v8Xg');
+		const serverIcon = interaction.guild.iconURL();
+
+		const unbanEmbed = {
+			color: 0x0099ff,
+			title: 'Invite',
+			description: 'Permanent invite link for this server:\nhttps://discord.gg/SX7fXrDtth',
+			thumbnail: {
+				url: serverIcon,
+			},
+		};
+		await interaction.reply({ embeds: [unbanEmbed] });
 	},
 };

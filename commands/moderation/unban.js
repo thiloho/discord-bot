@@ -9,6 +9,11 @@ module.exports = {
 	async execute(interaction) {
 		const user = interaction.options.getUser('target');
 		interaction.guild.members.unban(user);
-		await interaction.reply(`${user} was successfully unbanned.`);
+		const unbanEmbed = {
+			color: 0x0099ff,
+			title: 'Unban',
+			description: `${user} was successfully unbanned.`,
+		};
+		await interaction.reply({ embeds: [unbanEmbed] });
 	},
 };

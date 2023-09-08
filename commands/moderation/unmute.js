@@ -10,11 +10,21 @@ module.exports = {
 		const member = interaction.options.getMember('target');
 
 		if (!member) {
-			await interaction.reply('Error: User not found.');
-			return;
+			const noUserFoundEmbed = {
+				color: 0x0099ff,
+				title: 'Not found',
+				description: 'Error: User not found.',
+			};
+			return await interaction.reply({ embeds: [noUserFoundEmbed] });
 		}
 
 		member.timeout(null);
-		await interaction.reply(`${member} was successfully unmuted.`);
+
+		const unmutedEmbed = {
+			color: 0x0099ff,
+			title: 'Unmute',
+			description: `${member} was successfully unmuted.`,
+		};
+		await interaction.reply({ embeds: [unmutedEmbed] });
 	},
 };

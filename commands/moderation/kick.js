@@ -12,8 +12,12 @@ module.exports = {
 		const kickReason = interaction.options.getString('reason');
 
 		if (!member) {
-			await interaction.reply('Error: User not found.');
-			return;
+			const noUserFoundEmbed = {
+				color: 0x0099ff,
+				title: 'Not found',
+				description: 'Error: User not found.',
+			};
+			return await interaction.reply({ embeds: [noUserFoundEmbed] });
 		}
 
 		member.kick();

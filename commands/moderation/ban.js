@@ -12,8 +12,12 @@ module.exports = {
 		const banReason = interaction.options.getString('reason');
 
 		if (!user) {
-			await interaction.reply('Error: User not found.');
-			return;
+			const noUserFoundEmbed = {
+				color: 0x0099ff,
+				title: 'Not found',
+				description: 'Error: User not found.',
+			};
+			return await interaction.reply({ embeds: [noUserFoundEmbed] });
 		}
 
 		interaction.guild.members.ban(user);
@@ -21,7 +25,7 @@ module.exports = {
 		const banEmbed = {
 			color: 0x0099ff,
 			title: 'Server ban',
-			description: `The user ${userMention(user.id)} was successfully kicked from the server.`,
+			description: `The user ${userMention(user.id)} was successfully banned from the server.`,
 			fields: [
 				{
 					name: 'Banned by',

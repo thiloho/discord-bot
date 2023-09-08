@@ -1,4 +1,4 @@
-const { Events, Collection } = require('discord.js');
+const { Events, Collection, inlineCode } = require('discord.js');
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -27,7 +27,13 @@ module.exports = {
 			const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
 
 			if (now < expirationTime) {
-				return interaction.reply({ content: `Please wait, you are on a cooldown for \`${command.data.name}\`.`, ephemeral: true });
+				const cooldownEmbed = {
+					color: 0x0099ff,
+					title: 'Cooldown',
+					description: `Please wait, you are on a cooldown for ${inlineCode(command.data.name)}.`,
+				};
+
+				return interaction.reply({ embeds: [cooldownEmbed], ephemeral: true });
 			}
 		}
 

@@ -7,14 +7,20 @@ module.exports = {
 	async execute(interaction) {
 		const roleId = '1142228335682932846';
 		const member = interaction.member;
+		const notifyEmbed = {
+			color: 0x0099ff,
+			title: 'Notify',
+			description: 'You will now receive pings from announcements.',
+		};
 
 		if (member.roles.cache.has(roleId)) {
 			member.roles.remove(roleId);
-			await interaction.reply('You will no longer receive pings from announcements.');
+			notifyEmbed.description = 'You will no longer receive pings from announcements.';
 		}
 		else {
 			member.roles.add(roleId);
-			interaction.reply('You will now receive pings from announcements.');
 		}
+
+		await interaction.reply({ embeds: [notifyEmbed] });
 	},
 };

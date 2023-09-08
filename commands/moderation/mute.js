@@ -14,8 +14,12 @@ module.exports = {
 		const timeoutReason = interaction.options.getString('reason');
 
 		if (!member) {
-			await interaction.reply('Error: User not found.');
-			return;
+			const noUserFoundEmbed = {
+				color: 0x0099ff,
+				title: 'Not found',
+				description: 'Error: User not found.',
+			};
+			return await interaction.reply({ embeds: [noUserFoundEmbed] });
 		}
 
 		member.timeout(timeoutDuration * 60000);
