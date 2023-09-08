@@ -27,13 +27,25 @@ module.exports = {
 			if (user.experience_points >= neededXP) {
 				user.level += 1;
 				user.experience_points = 0;
-				message.reply(`Congratulations! You have leveled up to level ${user.level}!`);
+
+				const levelUpEmbed = {
+					color: 0x0099ff,
+					title: 'Level up',
+					description: `Congratulations! You have leveled up to level ${user.level}!`,
+				};
+				message.reply({ embeds: [levelUpEmbed] });
 			}
 			for (const [level, roleId] of Object.entries(rewards)) {
 				if (user.level == level) {
 					const { member } = message;
 					member.roles.add(roleId);
-					message.reply(`You were given the ${roleMention(roleId)} role because you reached level ${user.level}. Congratulations!`);
+
+					const levelRewardEmbed = {
+						color: 0x0099ff,
+						title: 'Level reward',
+						description: `You were given the ${roleMention(roleId)} role because you reached level ${user.level}. Congratulations!`,
+					};
+					message.reply({ embeds: [levelRewardEmbed] });
 				}
 			}
 			await user.save();

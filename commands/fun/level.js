@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, roleMention } = require('discord.js');
+const { SlashCommandBuilder, roleMention, userMention } = require('discord.js');
 const { Users } = require('../../dbObjects.js');
 const rewards = require('../../level-rewards.json');
 
@@ -21,7 +21,22 @@ module.exports = {
 			const user = await Users.findOne({ where: { user_id: target.id } });
 			if (user) {
 				const neededXP = 10 * Math.pow(2, user.level - 1);
-				await interaction.reply(`Level: ${user.level}\nXP: ${user.experience_points}/${neededXP}`);
+				const infoEmbed = {
+					color: 0x0099ff,
+					title: 'Level Info',
+					description: `${target.id === interaction.user.id ? 'Your level' : `${userMention(target.id)}'s Level`}`,
+					fields: [
+						{
+							name: 'Level',
+							value: `${user.level}`,
+						},
+						{
+							name: 'Experience',
+							value: `${user.experience_points} / ${neededXP}`,
+						},
+					],
+				};
+				await interaction.reply({ embeds: [infoEmbed] });
 			}
 			else {
 				await interaction.reply('This user has not started leveling up yet.');
