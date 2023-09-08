@@ -20,7 +20,7 @@ module.exports = {
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('transfer')
-				.setDescription('Transfer currency to another user."')
+				.setDescription('Transfer currency to another user.')
 				.addIntegerOption(option => option.setName('amount').setDescription('Amount of money').setMinValue(1).setRequired(true))
 				.addUserOption(option => option.setName('recipient').setDescription('User who receives the money').setRequired(true)))
 		.addSubcommand(subcommand =>
