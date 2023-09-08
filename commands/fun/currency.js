@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, userMention } = require('discord.js');
-const { currency, getBalance, addBalance } = require('../../shared-currency-functions');
+const { currency, getBalance, addBalance, getAllItems } = require('../../shared-currency-functions');
 const { Users, CurrencyShop } = require('../../dbObjects.js');
 const { Op } = require('sequelize');
 
@@ -27,7 +27,7 @@ module.exports = {
 			subcommand
 				.setName('buy')
 				.setDescription('Buy an item')
-				.addStringOption(option => option.setName('item').setDescription('Name of the item to buy').setRequired(true)))
+				.addStringOption(option => option.setName('item').setDescription('Name of the item to buy').setAutocomplete(true).setRequired(true)))
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('shop')
@@ -40,6 +40,15 @@ module.exports = {
 			subcommand
 				.setName('claim')
 				.setDescription('Claim your daily money')),
+	async autocomplete(interaction) {
+		const focusedValue = interaction.options.getFocused();
+		const choices = await getAllItems();
+		console.log(choices);
+		const filtered = choices.filter(choice => choice.startsWith(focusedValue));
+		await interaction.respond(
+			filtered.map(choice => ({ name: choice, value: choice })),
+		);
+	},
 	async execute(interaction) {
 		if (interaction.options.getSubcommand() === 'balance') {
 			const target = interaction.options.getUser('target') ?? interaction.user;
@@ -52,7 +61,12 @@ module.exports = {
 		}
 		else if (interaction.options.getSubcommand() === 'inventory') {
 			const target = interaction.options.getUser('target') ?? interaction.user;
-			const user = await Users.findOne({ where: { user_id: target.id } });
+			let user = await Users.findOne({ where: { user_id: target.id } });
+
+			if (!user) {
+				user = await Users.create({ user_id: target.id });
+			}
+
 			const items = await user.getItems();
 
 			if (!items.length) {
@@ -67,7 +81,7 @@ module.exports = {
 
 			const itemFields = items.map(i => ({
 				name: i.item.name,
-				value: `Amount: ${i.amount}`,
+				value: `x${i.amount}`,
 			}));
 
 			const inventoryEmbed = {
@@ -127,6 +141,7 @@ module.exports = {
 			}
 
 			const user = await Users.findOne({ where: { user_id: interaction.user.id } });
+
 			addBalance(interaction.user.id, -item.cost);
 			await user.addItem(item);
 
@@ -176,7 +191,6 @@ module.exports = {
 
 			if (!user) {
 				user = await Users.create({ user_id: interaction.user.id });
-				currency.set(interaction.user.id, user);
 			}
 
 			const lastClaim = user.last_claim;
@@ -202,7 +216,7 @@ module.exports = {
 			const claimSuccessfulEmbed = {
 				color: 0x0099ff,
 				title: 'Claimed money',
-				description: `You have successfully claimed your ${dailyMoneyAmount} daily money!`,
+				description: `You have successfully claimed your ${dailyMoneyAmount}$ daily money!`,
 			};
 
 			return interaction.reply({ embeds: [claimSuccessfulEmbed] });

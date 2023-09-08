@@ -18,29 +18,29 @@ module.exports = {
 	async execute(interaction) {
 		if (interaction.options.getSubcommand() === 'info') {
 			const target = interaction.options.getUser('target') || interaction.user;
-			const user = await Users.findOne({ where: { user_id: target.id } });
-			if (user) {
-				const neededXP = 10 * Math.pow(2, user.level - 1);
-				const infoEmbed = {
-					color: 0x0099ff,
-					title: 'Level Info',
-					description: `${target.id === interaction.user.id ? 'Your level' : `${userMention(target.id)}'s Level`}`,
-					fields: [
-						{
-							name: 'Level',
-							value: `${user.level}`,
-						},
-						{
-							name: 'Experience',
-							value: `${user.experience_points} / ${neededXP}`,
-						},
-					],
-				};
-				await interaction.reply({ embeds: [infoEmbed] });
+			let user = await Users.findOne({ where: { user_id: target.id } });
+
+			if (!user) {
+				user = await Users.create({ user_id: target.id });
 			}
-			else {
-				await interaction.reply('This user has not started leveling up yet.');
-			}
+
+			const neededXP = 10 * Math.pow(2, user.level - 1);
+			const infoEmbed = {
+				color: 0x0099ff,
+				title: 'Level Info',
+				description: `${target.id === interaction.user.id ? 'Your level' : `${userMention(target.id)}'s Level`}`,
+				fields: [
+					{
+						name: 'Level',
+						value: `${user.level}`,
+					},
+					{
+						name: 'Experience',
+						value: `${user.experience_points} / ${neededXP}`,
+					},
+				],
+			};
+			await interaction.reply({ embeds: [infoEmbed] });
 		}
 		else if (interaction.options.getSubcommand() === 'rewards') {
 			const rewardsEmbed = {

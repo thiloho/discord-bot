@@ -8,12 +8,23 @@ module.exports = {
 		.setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
 	async execute(interaction) {
 		const user = interaction.options.getUser('target');
-		interaction.guild.members.unban(user);
-		const unbanEmbed = {
-			color: 0x0099ff,
-			title: 'Unban',
-			description: `${user} was successfully unbanned.`,
-		};
-		await interaction.reply({ embeds: [unbanEmbed] });
+		try {
+			await interaction.guild.members.unban(user);
+			const unbanEmbed = {
+				color: 0x0099ff,
+				title: 'Unban',
+				description: `${user} was successfully unbanned.`,
+			};
+			await interaction.reply({ embeds: [unbanEmbed] });
+		}
+		catch (error) {
+			const unbanFailureEmbed = {
+				color: 0x0099ff,
+				title: 'Unban',
+				description: `User ${user} is not banned.`,
+			};
+
+			await interaction.reply({ embeds: [unbanFailureEmbed] });
+		}
 	},
 };

@@ -1,5 +1,5 @@
 const { Collection } = require('discord.js');
-const { Users } = require('./dbObjects.js');
+const { Users, CurrencyShop } = require('./dbObjects.js');
 
 const currency = new Collection();
 
@@ -32,4 +32,11 @@ function getBalance(id) {
 	return user ? user.balance : 0;
 }
 
-module.exports = { currency, addBalance, getBalance };
+async function getAllItems() {
+	const items = await CurrencyShop.findAll();
+	const transformedArray = items.map(item => item.dataValues.name);
+
+	return transformedArray;
+}
+
+module.exports = { currency, addBalance, getBalance, getAllItems };

@@ -20,8 +20,6 @@ module.exports = {
 			return await interaction.reply({ embeds: [noUserFoundEmbed] });
 		}
 
-		interaction.guild.members.ban(user);
-
 		const banEmbed = {
 			color: 0x0099ff,
 			title: 'Server ban',
@@ -37,6 +35,8 @@ module.exports = {
 				},
 			],
 		};
+
+		interaction.guild.members.ban(user);
 
 		await interaction.reply({ embeds: [ banEmbed ] });
 	},
