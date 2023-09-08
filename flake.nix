@@ -26,6 +26,9 @@
             nodejs_20
             tree
           ];
+          shellHook = ''
+            alias reinit='node dbInit.js --force && node deploy-commands.js && node index.js'
+          '';
         };
       });
     };

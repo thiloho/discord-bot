@@ -103,12 +103,13 @@ module.exports = {
 
 			if (!user) {
 				user = await Users.create({ user_id: interaction.user.id });
+				currency.set(interaction.user.id, user);
 			}
 
 			const lastClaim = user.last_claim;
 			const now = new Date();
 			const diffTime = Math.abs(now - lastClaim);
-			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+			const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
 			if (diffDays < 1) {
 				return interaction.reply(`Sorry, ${interaction.user}, you have already claimed your daily money.`);

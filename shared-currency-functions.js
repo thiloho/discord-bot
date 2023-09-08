@@ -4,17 +4,27 @@ const { Users } = require('./dbObjects.js');
 const currency = new Collection();
 
 async function addBalance(id, amount) {
-	const user = currency.get(id);
+	let user = currency.get(id);
 
 	if (user) {
 		user.balance += Number(amount);
-		return user.save();
+		await user.save();
+	}
+	else {
+		user = await Users.findOne({ where: { user_id: id } });
+
+		if (user) {
+			user.balance += Number(amount);
+			await user.save();
+			currency.set(id, user);
+		}
+		else {
+			user = await Users.create({ user_id: id, balance: amount });
+			currency.set(id, user);
+		}
 	}
 
-	const newUser = await Users.create({ user_id: id, balance: amount });
-	currency.set(id, newUser);
-
-	return newUser;
+	return user;
 }
 
 function getBalance(id) {
