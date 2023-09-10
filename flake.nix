@@ -31,5 +31,17 @@
           '';
         };
       });
+      packages = forAllSystems ({ pkgs }: {
+        default = pkgs.buildNpmPackage {
+          name = "build-denbot";
+          src = ./.;
+          npmDepsHash = "sha256-NRoyh++f5/NotnT6w59OtSYW2pKwJ04H32Ujy/adCNE=";
+          dontNpmBuild = true;
+          installPhase = ''
+            mkdir $out
+            cp -r * $out
+          '';
+        };
+      });
     };
 }
