@@ -1,7 +1,20 @@
 const { REST, Routes } = require('discord.js');
-const { clientId, guildId, token } = require('./config.json');
+const { clientId, guildId } = require('./config.json');
 const fs = require('node:fs');
 const path = require('node:path');
+
+let token;
+
+for (let i = 0; i < process.argv.length; i++) {
+	if (process.argv[i].startsWith('--token=')) {
+		token = process.argv[i].split('=')[1];
+		break;
+	}
+}
+
+if (!token) {
+	token = require('./token.json').token;
+}
 
 const commands = [];
 const foldersPath = path.join(__dirname, 'commands');
