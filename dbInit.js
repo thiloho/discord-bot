@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const items = require('./shop.json');
 
 const sequelize = new Sequelize('dcbot', 'postgres', null, {
 	host: '/run/postgresql',
@@ -13,11 +14,7 @@ require('./models/UserItems.js')(sequelize, Sequelize.DataTypes);
 const force = process.argv.includes('--force') || process.argv.includes('-f');
 
 sequelize.sync({ force }).then(async () => {
-	const shop = [
-		CurrencyShop.upsert({ name: 'Tea', cost: 1 }),
-		CurrencyShop.upsert({ name: 'Coffee', cost: 2 }),
-		CurrencyShop.upsert({ name: 'Cake', cost: 5 }),
-	];
+	const shop = items.map(item => CurrencyShop.upsert(item));
 
 	await Promise.all(shop);
 	console.log('Database synced');
