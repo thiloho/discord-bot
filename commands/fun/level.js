@@ -1,6 +1,7 @@
-const { SlashCommandBuilder, roleMention, userMention } = require('discord.js');
+const { SlashCommandBuilder, roleMention, userMention, AttachmentBuilder } = require('discord.js');
 const { Users } = require('../../dbObjects.js');
 const rewards = require('../../level-rewards.json');
+const Canvas = require('@napi-rs/canvas');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -14,7 +15,11 @@ module.exports = {
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('rewards')
-				.setDescription('Explore the rewards you can earn for leveling up.')),
+				.setDescription('Explore the rewards you can earn for leveling up.'))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('infonew')
+				.setDescription('New level info command.')),
 	async execute(interaction) {
 		if (interaction.options.getSubcommand() === 'info') {
 			const target = interaction.options.getUser('user') || interaction.user;
@@ -55,6 +60,29 @@ module.exports = {
 			}
 
 			await interaction.reply({ embeds: [rewardsEmbed] });
+		}
+		else if (interaction.options.getSubcommand() === 'infonew') {
+			const canvas = Canvas.createCanvas(700, 250);
+			const context = canvas.getContext('2d');
+
+			const background = await Canvas.loadImage('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+			context.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+			context.font = '28px sans-serif';
+			context.fillStyle = '#ffffff';
+			context.fillText('Level', canvas.width / 2.5, canvas.height / 3.5);
+
+			context.beginPath();
+			context.arc(125, 125, 100, 0, Math.PI * 2, true);
+			context.closePath();
+			context.clip();
+
+			const avatar = await Canvas.loadImage(interaction.user.displayAvatarURL());
+			context.drawImage(avatar, 25, 25, 200, 200);
+
+			const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'level-image.png' });
+
+			interaction.reply({ files: [attachment] });
 		}
 	},
 };
