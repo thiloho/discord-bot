@@ -10,12 +10,10 @@ for (let i = 0; i < process.argv.length; i++) {
 	if (process.argv[i].startsWith('--token=')) {
 		const tokenPath = process.argv[i].split('=')[1];
 		token = fs.readFileSync(tokenPath, 'utf8').trim();
-		break;
 	}
 
 	if (process.argv[i].startsWith('--clientId=')) {
 		clientId = process.argv[i].split('=')[1];
-		break;
 	}
 }
 
