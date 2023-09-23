@@ -1,9 +1,10 @@
 const { REST, Routes } = require('discord.js');
-const { clientId, guildId } = require('./config.json');
+const { guildId } = require('./config.json');
 const fs = require('node:fs');
 const path = require('node:path');
 
 let token;
+let clientId;
 
 for (let i = 0; i < process.argv.length; i++) {
 	if (process.argv[i].startsWith('--token=')) {
@@ -11,10 +12,19 @@ for (let i = 0; i < process.argv.length; i++) {
 		token = fs.readFileSync(tokenPath, 'utf8').trim();
 		break;
 	}
+
+	if (process.argv[i].startsWith('--clientId=')) {
+		clientId = process.argv[i].split('=')[1];
+		break;
+	}
 }
 
 if (!token) {
 	token = require('./token.json').token;
+}
+
+if (!clientId) {
+	clientId = require('./config.json').clientId;
 }
 
 const commands = [];
