@@ -39,12 +39,26 @@ module.exports = {
 		.addSubcommand(subcommand =>
 			subcommand
 				.setName('claim')
-				.setDescription('Claim your daily money.')),
+				.setDescription('Claim your daily money.'))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('gamble')
+				.setDescription('Gamble to either double or lose the money you bet!')
+				.addStringOption(option => option.setName('risk_level').setDescription('Risk tolerance for distinct outcome').setAutocomplete(true).setRequired(true))
+				.addIntegerOption(option => option.setName('amount').setDescription('Amount of money').setMinValue(1).setRequired(true))),
 	async autocomplete(interaction) {
-		const focusedValue = interaction.options.getFocused();
-		const choices = await getAllItems();
-		console.log(choices);
-		const filtered = choices.filter(choice => choice.startsWith(focusedValue));
+		const focusedOption = interaction.options.getFocused(true);
+		let choices;
+
+		if (focusedOption.name === 'item_name') {
+			choices = await getAllItems();
+		}
+
+		if (focusedOption.name === 'risk_level') {
+			choices = ['low', 'high'];
+		}
+
+		const filtered = choices.filter(choice => choice.startsWith(focusedOption.value));
 		await interaction.respond(
 			filtered.map(choice => ({ name: choice, value: choice })),
 		);
@@ -214,6 +228,56 @@ module.exports = {
 			};
 
 			return interaction.reply({ embeds: [claimSuccessfulEmbed] });
+		}
+		else if (interaction.options.getSubcommand() === 'gamble') {
+			const currentAmount = getBalance(interaction.user.id);
+			const riskLevel = interaction.options.getString('risk_level');
+			const gambleAmount = interaction.options.getInteger('amount');
+
+			if (gambleAmount > currentAmount) {
+				const insufficientFundsEmbed = {
+					color: 0x0099ff,
+					title: 'Gamble',
+					description: `Sorry, you have only $${currentAmount}, and you tried to gamble $${gambleAmount}.`,
+				};
+				return interaction.reply({ embeds: [insufficientFundsEmbed] });
+			}
+
+			let winningChance;
+			let rewardMultiplier;
+
+			switch (riskLevel) {
+			case 'low':
+				winningChance = 0.3;
+				rewardMultiplier = 1.5;
+				break;
+			case 'high':
+				winningChance = 0.15;
+				rewardMultiplier = 2;
+				break;
+			}
+
+			const random = Math.random();
+			const winAmount = gambleAmount * rewardMultiplier - gambleAmount;
+
+			if (random <= winningChance) {
+				const gambleWinEmbed = {
+					color: 0x0099ff,
+					title: 'Gamble',
+					description: `Congratulations, you won the gamble and thus earned $${winAmount}!`,
+				};
+				addBalance(interaction.user.id, winAmount);
+				return interaction.reply({ embeds: [gambleWinEmbed] });
+			}
+			else {
+				const gambleLoseEmbed = {
+					color: 0x0099ff,
+					title: 'Gamble',
+					description: `Sorry, you lost the $${gambleAmount} you gambled. I wish you better luck for next time!`,
+				};
+				addBalance(interaction.user.id, -gambleAmount);
+				return interaction.reply({ embeds: [gambleLoseEmbed] });
+			}
 		}
 	},
 };
