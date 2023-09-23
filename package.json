@@ -9,7 +9,6 @@
   "author": "Thilo Hohlt",
   "license": "ISC",
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.44",
     "discord.js": "^14.13.0",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
